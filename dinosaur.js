@@ -245,4 +245,111 @@ function createGiantDinosaur(cx, cy) {
         [ 1, 1, "dinosaur_body"],
         [ 2, 1, "dinosaur_body"],
 
-        // ----------------
+        // ---------------- HEAD ----------------
+
+        [ 4, -4, "dinosaur_head"],
+        [ 5, -4, "dinosaur_head"],
+        [ 6, -4, "dinosaur_head"],
+
+        [ 4, -3, "dinosaur_head"],
+        [ 5, -3, "dinosaur_head"],
+        [ 6, -3, "dinosaur_head"],
+        [ 7, -3, "dinosaur_head"],
+
+        [ 4, -2, "dinosaur_head"],
+        [ 5, -2, "dinosaur_head"],
+        [ 6, -2, "dinosaur_head"],
+        [ 7, -2, "dinosaur_head"],
+
+        [ 5, -1, "dinosaur_head"],
+        [ 6, -1, "dinosaur_head"],
+        [ 7, -1, "dinosaur_head"],
+
+        // ---------------- EYE ----------------
+
+        [ 6, -3, "dinosaur_eye"],
+
+        // ---------------- JAW ----------------
+
+        [ 5, 0, "dinosaur_jaw"],
+        [ 6, 0, "dinosaur_jaw"],
+        [ 7, 0, "dinosaur_jaw"],
+        [ 8, 0, "dinosaur_jaw"],
+
+        [ 5, 1, "dinosaur_jaw"],
+        [ 6, 1, "dinosaur_jaw"],
+        [ 7, 1, "dinosaur_jaw"],
+
+        // ---------------- TEETH ----------------
+
+        [ 5, 2, "dinosaur_teeth"],
+        [ 6, 2, "dinosaur_teeth"],
+        [ 7, 2, "dinosaur_teeth"],
+
+        [ 8, 1, "dinosaur_teeth"],
+
+        // ---------------- BACK LEGS ----------------
+
+        [-2, 2, "dinosaur_leg"],
+        [-2, 3, "dinosaur_leg"],
+        [-2, 4, "dinosaur_leg"],
+        [-2, 5, "dinosaur_leg"],
+
+        [-3, 5, "dinosaur_foot"],
+        [-2, 5, "dinosaur_foot"],
+        [-1, 5, "dinosaur_foot"],
+
+        // ---------------- FRONT LEGS ----------------
+
+        [ 2, 2, "dinosaur_leg"],
+        [ 2, 3, "dinosaur_leg"],
+        [ 2, 4, "dinosaur_leg"],
+
+        [ 1, 4, "dinosaur_foot"],
+        [ 2, 4, "dinosaur_foot"],
+        [ 3, 4, "dinosaur_foot"],
+
+        // ---------------- TAIL ----------------
+
+        [-4, -2, "dinosaur_tail"],
+        [-5, -2, "dinosaur_tail"],
+        [-6, -2, "dinosaur_tail"],
+
+        [-5, -1, "dinosaur_tail"],
+        [-6, -1, "dinosaur_tail"],
+        [-7, -1, "dinosaur_tail"],
+
+        [-7, 0, "dinosaur_tail"],
+        [-8, 0, "dinosaur_tail"],
+        [-9, 0, "dinosaur_tail"],
+
+        [-9, 1, "dinosaur_tail"],
+        [-10, 1, "dinosaur_tail"],
+        [-11, 1, "dinosaur_tail"]
+    ];
+
+    // --------------------------------------------------------
+    // Place every body pixel.
+    // --------------------------------------------------------
+
+    for (var i = 0; i < body.length; i++) {
+
+        var part = body[i];
+
+        var x = cx + part[0];
+        var y = cy + part[1];
+        var element = part[2];
+
+        // Do not overwrite something already there.
+        if (!getPixel(x, y)) {
+            tryCreate(element, x, y);
+        }
+    }
+
+    // Remove the original cursor pixel if it still exists.
+    var centerPixel = getPixel(cx, cy);
+
+    if (centerPixel && centerPixel.element === "giant_dinosaur") {
+        tryDelete(cx, cy);
+    }
+}
