@@ -1,9 +1,7 @@
-console.log("DINOSAUR MOD LOADED!");
-
-elements.test_dinosaur = {
-    name: "TEST DINOSAUR",
+elements.dinosaur_test = {
+    name: "DINOSAUR TEST",
     color: "#315c32",
     behavior: behaviors.WALL,
-    category: "life",
+    category: "dinosaur_test_category",
     state: "solid"
 };
