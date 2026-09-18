@@ -1,4 +1,4 @@
-// 🦖 GIANT DINOSAUR - VERSION 1
+// 🦖 GIANT DINOSAUR - VERSION 2
 
 elements.giant_dinosaur = {
     name: "GIANT DINOSAUR",
@@ -7,108 +7,150 @@ elements.giant_dinosaur = {
     state: "solid",
     behavior: behaviors.WALL,
 
-    // When you draw the dinosaur, create its body around the pixel.
     tick: function(pixel) {
-        if (pixel.dino_spawned) return;
 
-        pixel.dino_spawned = true;
+        // Body parts do NOT create another dinosaur
+        if (pixel.dino_part) return;
+
+        // This pixel is the dinosaur's starting point
+        pixel.dino_part = true;
 
         var x = pixel.x;
         var y = pixel.y;
 
-        // Body
+        // Helper for creating dinosaur body parts
+        function makePart(element, px, py) {
+            var newPixel = tryCreate(element, px, py);
+
+            if (newPixel) {
+                newPixel.dino_part = true;
+            }
+
+            return newPixel;
+        }
+
+        // 🟢 Main body
         for (var dx = -8; dx <= 8; dx++) {
             for (var dy = -3; dy <= 4; dy++) {
                 if (Math.random() < 0.9) {
-                    tryCreatePixel(elements.giant_dinosaur, x + dx, y + dy);
+                    makePart(elements.giant_dinosaur, x + dx, y + dy);
                 }
             }
         }
 
-        // Back
+        // 🟫 Brown back
         for (var dx = -7; dx <= 7; dx++) {
             for (var dy = -5; dy <= -3; dy++) {
                 if (Math.random() < 0.85) {
-                    tryCreatePixel(elements.dinosaur_back, x + dx, y + dy);
+                    makePart(elements.dinosaur_back, x + dx, y + dy);
                 }
             }
         }
 
-        // Neck
+        // 🦕 Neck
         for (var dx = 5; dx <= 8; dx++) {
             for (var dy = -8; dy <= 2; dy++) {
-                tryCreatePixel(elements.giant_dinosaur, x + dx, y + dy);
+                makePart(elements.giant_dinosaur, x + dx, y + dy);
             }
         }
 
-        // Head
+        // 🦖 Head
         for (var dx = 8; dx <= 14; dx++) {
             for (var dy = -11; dy <= -4; dy++) {
-                tryCreatePixel(elements.giant_dinosaur, x + dx, y + dy);
+                makePart(elements.giant_dinosaur, x + dx, y + dy);
             }
         }
 
-        // Snout
+        // 👃 Snout
         for (var dx = 13; dx <= 17; dx++) {
             for (var dy = -9; dy <= -5; dy++) {
-                tryCreatePixel(elements.giant_dinosaur, x + dx, y + dy);
+                makePart(elements.giant_dinosaur, x + dx, y + dy);
             }
         }
 
-        // Eye
-        tryCreatePixel(elements.dinosaur_eye, x + 11, y - 9);
+        // 👁️ Eye
+        makePart(elements.dinosaur_eye, x + 11, y - 9);
 
-        // Teeth
+        // 🦷 Teeth
         for (var dx = 12; dx <= 17; dx += 2) {
-            tryCreatePixel(elements.dinosaur_tooth, x + dx, y - 4);
+            makePart(elements.dinosaur_tooth, x + dx, y - 4);
         }
 
-        // Tail
+        // 🦴 Tail
         for (var dx = -9; dx >= -25; dx--) {
             var width = Math.max(1, Math.floor((25 + dx) / 5));
+
             for (var dy = -width; dy <= width; dy++) {
-                tryCreatePixel(elements.giant_dinosaur, x + dx, y + 2 + dy);
+                makePart(
+                    elements.giant_dinosaur,
+                    x + dx,
+                    y + 2 + dy
+                );
             }
         }
 
-        // Legs
+        // 🦵 Legs
         for (var legX of [-5, 5]) {
+
             for (var dy = 5; dy <= 12; dy++) {
-                tryCreatePixel(elements.giant_dinosaur, x + legX, y + dy);
-                tryCreatePixel(elements.giant_dinosaur, x + legX + 1, y + dy);
+                makePart(
+                    elements.giant_dinosaur,
+                    x + legX,
+                    y + dy
+                );
+
+                makePart(
+                    elements.giant_dinosaur,
+                    x + legX + 1,
+                    y + dy
+                );
             }
 
             // Feet
             for (var dx = -2; dx <= 2; dx++) {
-                tryCreatePixel(elements.giant_dinosaur, x + legX + dx, y + 13);
+                makePart(
+                    elements.giant_dinosaur,
+                    x + legX + dx,
+                    y + 13
+                );
             }
         }
 
-        // Arms
+        // 🦎 Small arms
         for (var dx = 5; dx <= 9; dx++) {
-            tryCreatePixel(elements.giant_dinosaur, x + dx, y + 2 + Math.floor(dx / 2));
+            makePart(
+                elements.giant_dinosaur,
+                x + dx,
+                y + 2 + Math.floor(dx / 2)
+            );
         }
     }
 };
 
+
 // 🟫 Brown back
 elements.dinosaur_back = {
+    name: "DinosaurBack",
     color: "#654321",
     behavior: behaviors.WALL,
     category: "life",
     state: "solid"
 };
 
+
 // 👁️ Black eye
 elements.dinosaur_eye = {
+    name: "DinosaurEye",
     color: "#000000",
     behavior: behaviors.WALL,
     category: "life",
     state: "solid"
 };
 
+
 // 🦷 Teeth
 elements.dinosaur_tooth = {
+    name: "DinosaurTooth",
     color: "#eeeecc",
     behavior: behaviors.WALL,
     category: "life",
