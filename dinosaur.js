@@ -1,5 +1,6 @@
-// 🦖 GIANT DINOSAUR - VERSION 4
-// Proper element IDs - fixes UNKNOWN pixels
+// 🦖 GIANT DINOSAUR
+// FINAL LOOK VERSION
+// Upright, scary, pixel-art T. rex
 
 elements.giant_dinosaur = {
     name: "GIANT DINOSAUR",
@@ -10,7 +11,7 @@ elements.giant_dinosaur = {
 
     tick: function(pixel) {
 
-        // Body pieces must not create another dinosaur
+        // Body parts must not create another dinosaur
         if (pixel.dino_part) return;
 
         pixel.dino_part = true;
@@ -18,7 +19,7 @@ elements.giant_dinosaur = {
         var x = pixel.x;
         var y = pixel.y;
 
-        // Safely create a dinosaur part
+        // Create one dinosaur part safely
         function makePart(elementID, px, py) {
 
             var newPixel = tryCreate(
@@ -34,11 +35,12 @@ elements.giant_dinosaur = {
             return newPixel;
         }
 
+
         // =========================
         // 🦖 MAIN BODY
         // =========================
 
-        for (var dx = -8; dx <= 7; dx++) {
+        for (var dx = -7; dx <= 6; dx++) {
             for (var dy = -3; dy <= 4; dy++) {
 
                 makePart(
@@ -49,11 +51,12 @@ elements.giant_dinosaur = {
             }
         }
 
+
         // =========================
         // 🟫 BROWN BACK
         // =========================
 
-        for (var dx = -7; dx <= 7; dx++) {
+        for (var dx = -7; dx <= 5; dx++) {
             for (var dy = -5; dy <= -3; dy++) {
 
                 makePart(
@@ -64,12 +67,13 @@ elements.giant_dinosaur = {
             }
         }
 
+
         // =========================
-        // 🦕 NECK
+        // 🦕 UPRIGHT NECK
         // =========================
 
-        for (var dx = 5; dx <= 8; dx++) {
-            for (var dy = -9; dy <= 1; dy++) {
+        for (var dx = 4; dx <= 6; dx++) {
+            for (var dy = -10; dy <= 1; dy++) {
 
                 makePart(
                     "giant_dinosaur",
@@ -79,12 +83,29 @@ elements.giant_dinosaur = {
             }
         }
 
+
         // =========================
-        // 🦖 HEAD
+        // 🟫 BROWN NECK RIDGE
         // =========================
 
-        for (var dx = 8; dx <= 14; dx++) {
-            for (var dy = -12; dy <= -5; dy++) {
+        for (var dx = 3; dx <= 5; dx++) {
+            for (var dy = -10; dy <= -5; dy++) {
+
+                makePart(
+                    "dinosaur_back",
+                    x + dx,
+                    y + dy
+                );
+            }
+        }
+
+
+        // =========================
+        // 🦖 UPPER HEAD
+        // =========================
+
+        for (var dx = 6; dx <= 12; dx++) {
+            for (var dy = -13; dy <= -8; dy++) {
 
                 makePart(
                     "giant_dinosaur",
@@ -94,12 +115,13 @@ elements.giant_dinosaur = {
             }
         }
 
+
         // =========================
-        // 👃 LONG SNOUT
+        // 👃 SNOUT
         // =========================
 
-        for (var dx = 13; dx <= 18; dx++) {
-            for (var dy = -10; dy <= -6; dy++) {
+        for (var dx = 10; dx <= 14; dx++) {
+            for (var dy = -11; dy <= -8; dy++) {
 
                 makePart(
                     "giant_dinosaur",
@@ -109,40 +131,99 @@ elements.giant_dinosaur = {
             }
         }
 
-        // =========================
-        // 👁️ BLACK EYE
-        // =========================
-
-        makePart(
-            "dinosaur_eye",
-            x + 11,
-            y - 9
-        );
 
         // =========================
-        // 🦷 TEETH
+        // 😈 DARK OPEN MOUTH
         // =========================
 
-        for (var dx = 13; dx <= 18; dx += 2) {
+        for (var dx = 9; dx <= 14; dx++) {
+            for (var dy = -7; dy <= -5; dy++) {
+
+                makePart(
+                    "dinosaur_mouth",
+                    x + dx,
+                    y + dy
+                );
+            }
+        }
+
+
+        // =========================
+        // 🦷 UPPER TEETH
+        // =========================
+
+        for (var dx = 10; dx <= 14; dx += 2) {
 
             makePart(
                 "dinosaur_tooth",
                 x + dx,
-                y - 5
+                y - 7
             );
         }
 
+
         // =========================
-        // 🦴 LONG TAIL
+        // 🦷 LOWER JAW
         // =========================
 
-        for (var dx = -9; dx >= -27; dx--) {
+        for (var dx = 9; dx <= 14; dx++) {
+
+            makePart(
+                "giant_dinosaur",
+                x + dx,
+                y - 4
+            );
+        }
+
+
+        // =========================
+        // 🦷 LOWER TEETH
+        // =========================
+
+        for (var dx = 10; dx <= 14; dx += 2) {
+
+            makePart(
+                "dinosaur_tooth",
+                x + dx,
+                y - 4
+            );
+        }
+
+
+        // =========================
+        // 👁️ ONE-PIXEL BLACK EYE
+        // =========================
+
+        makePart(
+            "dinosaur_eye",
+            x + 9,
+            y - 11
+        );
+
+
+        // =========================
+        // 🦴 RAISED TAIL
+        // =========================
+
+        for (var dx = -8; dx >= -22; dx--) {
 
             var distance = Math.abs(dx);
 
+            var tailY;
+
+            if (distance < 12) {
+                tailY = 2;
+            }
+            else if (distance < 17) {
+                tailY = 1;
+            }
+            else {
+                tailY = 0;
+            }
+
             var width = Math.max(
                 1,
-                Math.floor((27 - distance) / 5)
+                Math.floor((22 - distance) / 5)
             );
 
             for (var dy = -width; dy <= width; dy++) {
@@ -150,22 +231,24 @@ elements.giant_dinosaur = {
                 makePart(
                     "giant_dinosaur",
                     x + dx,
-                    y + 2 + dy
+                    y + tailY + dy
                 );
             }
         }
 
+
         // =========================
-        // 🦵 POWERFUL BACK LEGS
+        // 🦵 POWERFUL LEGS
         // =========================
 
-        var legs = [-5, 5];
+        var legs = [-4, 4];
 
         for (var i = 0; i < legs.length; i++) {
 
             var legX = legs[i];
 
-            for (var dy = 5; dy <= 12; dy++) {
+            // Upper leg
+            for (var dy = 5; dy <= 9; dy++) {
 
                 makePart(
                     "giant_dinosaur",
@@ -180,16 +263,27 @@ elements.giant_dinosaur = {
                 );
             }
 
-            // 🦶 Feet
-            for (var dx = -2; dx <= 2; dx++) {
+            // Lower leg angled slightly
+            for (var dy = 10; dy <= 13; dy++) {
+
+                makePart(
+                    "giant_dinosaur",
+                    x + legX + 1,
+                    y + dy
+                );
+            }
+
+            // Foot
+            for (var dx = -1; dx <= 2; dx++) {
 
                 makePart(
                     "giant_dinosaur",
                     x + legX + dx,
-                    y + 13
+                    y + 14
                 );
             }
         }
+
 
         // =========================
         // 🦎 LITTLE T. REX ARMS
@@ -197,25 +291,27 @@ elements.giant_dinosaur = {
 
         makePart(
             "giant_dinosaur",
-            x + 7,
+            x + 5,
+            y + 1
+        );
+
+        makePart(
+            "giant_dinosaur",
+            x + 6,
             y + 2
         );
 
         makePart(
             "giant_dinosaur",
-            x + 8,
+            x + 7,
             y + 3
         );
 
-        makePart(
-            "giant_dinosaur",
-            x + 9,
-            y + 4
-        );
 
+        // Tiny claws
         makePart(
-            "giant_dinosaur",
-            x + 10,
+            "dinosaur_tooth",
+            x + 7,
             y + 4
         );
     }
@@ -236,7 +332,7 @@ elements.dinosaur_back = {
 
 
 // =========================
-// 👁️ BLACK EYE
+// 👁️ ONE-PIXEL BLACK EYE
 // =========================
 
 elements.dinosaur_eye = {
@@ -255,6 +351,19 @@ elements.dinosaur_eye = {
 elements.dinosaur_tooth = {
     name: "DinosaurTooth",
     color: "#eeeecc",
+    behavior: behaviors.WALL,
+    category: "life",
+    state: "solid"
+};
+
+
+// =========================
+// 😈 DARK RED MOUTH
+// =========================
+
+elements.dinosaur_mouth = {
+    name: "DinosaurMouth",
+    color: "#5c1717",
     behavior: behaviors.WALL,
     category: "life",
     state: "solid"
