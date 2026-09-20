@@ -1,5 +1,6 @@
-// 🦖 GIANT DINOSAUR - NEW FINAL BODY
-// Pixel-art T. rex body design
+// 🦖 GIANT DINOSAUR - FINAL BODY DESIGN
+// Upright pixel-art T. rex
+// Angry 3-pixel eye
 
 elements.giant_dinosaur = {
     name: "GIANT DINOSAUR",
@@ -10,7 +11,7 @@ elements.giant_dinosaur = {
 
     tick: function(pixel) {
 
-        // Prevent body parts from creating another dinosaur
+        // Body parts must not create another dinosaur
         if (pixel.dino_part) return;
 
         pixel.dino_part = true;
@@ -43,10 +44,14 @@ elements.giant_dinosaur = {
         // =========================
 
         for (var dx = -6; dx <= 4; dx++) {
-            makePart("dinosaur_back", x + dx, y - 3);
+            makePart(
+                "dinosaur_back",
+                x + dx,
+                y - 3
+            );
         }
 
-        // Raised brown ridge
+        // Raised brown neck ridge
         makePart("dinosaur_back", x + 1, y - 4);
         makePart("dinosaur_back", x + 2, y - 5);
         makePart("dinosaur_back", x + 3, y - 6);
@@ -96,13 +101,23 @@ elements.giant_dinosaur = {
         }
 
         // =========================
-        // 😠 THREE-PIXEL ANGRY EYE
+        // 😠 ANGRY 3-PIXEL EYE
+        //
+        //     ■
+        //     ■■
         // =========================
 
         tryCreate(
             "dinosaur_eye",
+            x + 8,
+            y - 12,
+            true
+        );
+
+        tryCreate(
+            "dinosaur_eye",
             x + 7,
-            y - 10,
+            y - 11,
             true
         );
 
@@ -110,13 +125,6 @@ elements.giant_dinosaur = {
             "dinosaur_eye",
             x + 8,
             y - 11,
-            true
-        );
-
-        tryCreate(
-            "dinosaur_eye",
-            x + 9,
-            y - 12,
             true
         );
 
@@ -183,105 +191,112 @@ elements.giant_dinosaur = {
         );
 
         // =========================
-        // 🦎 NEW TAIL
+        // 🦎 FULLER RAISED TAIL
         // =========================
 
-        // Thick base
-        for (var dx = -8; dx >= -12; dx--) {
-            for (var dy = 0; dy <= 3; dy++) {
+        for (var dx = -8; dx >= -13; dx--) {
+            var width = 2;
+
+            for (var dy = -width; dy <= width; dy++) {
                 makePart(
                     "giant_dinosaur",
                     x + dx,
-                    y + dy
+                    y + 2 + dy
                 );
             }
         }
 
-        // Middle tail
-        for (var dx = -13; dx >= -17; dx--) {
-            for (var dy = 0; dy <= 2; dy++) {
+        for (var dx = -14; dx >= -18; dx--) {
+            var width = 1;
+
+            for (var dy = -width; dy <= width; dy++) {
                 makePart(
                     "giant_dinosaur",
                     x + dx,
-                    y + dy
+                    y + 1 + dy
                 );
             }
         }
 
-        // Narrow tail
-        for (var dx = -18; dx >= -22; dx--) {
-            for (var dy = 0; dy <= 1; dy++) {
-                makePart(
-                    "giant_dinosaur",
-                    x + dx,
-                    y + dy
-                );
-            }
-        }
-
-        // Curved tail tip
-        makePart("giant_dinosaur", x - 23, y - 1);
-        makePart("giant_dinosaur", x - 24, y - 1);
-        makePart("giant_dinosaur", x - 25, y - 2);
-
-        // =========================
-        // 🦵 NEW POWERFUL LEGS
-        // =========================
-
-        // Left leg
-        for (var dy = 5; dy <= 9; dy++) {
-            makePart(
-                "giant_dinosaur",
-                x - 3,
-                y + dy
-            );
-        }
-
-        for (var dy = 10; dy <= 13; dy++) {
-            makePart(
-                "giant_dinosaur",
-                x - 4,
-                y + dy
-            );
-        }
-
-        // Left foot
-        for (var dx = -5; dx <= -2; dx++) {
+        for (var dx = -19; dx >= -23; dx--) {
             makePart(
                 "giant_dinosaur",
                 x + dx,
-                y + 14
+                y + 1
             );
         }
 
-        // Right leg
-        for (var dy = 5; dy <= 9; dy++) {
-            makePart(
-                "giant_dinosaur",
-                x + 3,
-                y + dy
-            );
-        }
+        // Raised tail tip
+        makePart(
+            "giant_dinosaur",
+            x - 24,
+            y
+        );
 
-        for (var dy = 10; dy <= 13; dy++) {
-            makePart(
-                "giant_dinosaur",
-                x + 4,
-                y + dy
-            );
-        }
+        makePart(
+            "giant_dinosaur",
+            x - 25,
+            y - 1
+        );
 
-        // Right foot
-        for (var dx = 2; dx <= 5; dx++) {
-            makePart(
-                "giant_dinosaur",
-                x + dx,
-                y + 14
-            );
+        // =========================
+        // 🦵 POWERFUL LEGS
+        // =========================
+
+        var legs = [-3, 3];
+
+        for (var i = 0; i < legs.length; i++) {
+
+            var legX = legs[i];
+
+            // Upper leg
+            for (var dy = 5; dy <= 9; dy++) {
+
+                makePart(
+                    "giant_dinosaur",
+                    x + legX,
+                    y + dy
+                );
+
+                makePart(
+                    "giant_dinosaur",
+                    x + legX + 1,
+                    y + dy
+                );
+            }
+
+            // Lower leg
+            for (var dy = 10; dy <= 13; dy++) {
+
+                var offset;
+
+                if (legX < 0) {
+                    offset = -1;
+                }
+                else {
+                    offset = 1;
+                }
+
+                makePart(
+                    "giant_dinosaur",
+                    x + legX + offset,
+                    y + dy
+                );
+            }
+
+            // Foot
+            for (var dx = -1; dx <= 2; dx++) {
+
+                makePart(
+                    "giant_dinosaur",
+                    x + legX + dx,
+                    y + 14
+                );
+            }
         }
 
         // =========================
-        // 💪 TINY ARMS
+        // 💪 TINY T. REX ARMS
         // =========================
 
         makePart(
@@ -302,7 +317,7 @@ elements.giant_dinosaur = {
             y + 2
         );
 
-        // Tiny claws
+        // Tiny claw
         tryCreate(
             "dinosaur_tooth",
             x + 7,
@@ -353,7 +368,7 @@ elements.dinosaur_tooth = {
 
 
 // =========================
-// 🩸 MOUTH
+// 🩸 DARK RED MOUTH
 // =========================
 
 elements.dinosaur_mouth = {
