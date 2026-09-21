@@ -132,6 +132,21 @@ elements.giant_dinosaur = {
         );
 
         // =========================
+        // 🟢 FILL THE OLD BLACK NECK GAP
+        // Keeps the head, neck and mouth connected
+        // =========================
+
+        for (var dx = 6; dx <= 7; dx++) {
+            for (var dy = -7; dy <= 1; dy++) {
+                makePart(
+                    "giant_dinosaur",
+                    x + dx,
+                    y + dy
+                );
+            }
+        }
+
+        // =========================
         // 🩸 OPEN MOUTH
         // =========================
 
