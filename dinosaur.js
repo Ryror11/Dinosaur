@@ -107,9 +107,12 @@ elements.giant_dinosaur = {
         //     ■■
         // =========================
 
+        // 😠 ANGRY 3-PIXEL EYE
+        //     ■
+        //     ■■
         tryCreate(
             "dinosaur_eye",
-            x + 8,
+            x + 7,
             y - 12,
             true
         );
