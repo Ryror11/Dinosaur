@@ -40,10 +40,11 @@ elements.giant_dinosaur = {
         }
 
         // =========================
-        // 🟫 BROWN BACK
+        // 🟫 BROWN BACK — 1 PIXEL DEEP
+        // Continuous from head to tail
         // =========================
 
-        for (var dx = -6; dx <= 4; dx++) {
+        for (var dx = -6; dx <= 6; dx++) {
             makePart(
                 "dinosaur_back",
                 x + dx,
@@ -164,19 +165,9 @@ elements.giant_dinosaur = {
         // 🦷 UPPER TEETH
         // =========================
 
-        tryCreate(
-            "dinosaur_tooth",
-            x + 9,
-            y - 7,
-            true
-        );
-
-        tryCreate(
-            "dinosaur_tooth",
-            x + 11,
-            y - 7,
-            true
-        );
+        tryCreate("dinosaur_tooth", x + 8, y - 7, true);
+        tryCreate("dinosaur_tooth", x + 10, y - 7, true);
+        tryCreate("dinosaur_tooth", x + 12, y - 7, true);
 
         // =========================
         // 🦖 LOWER JAW
@@ -194,22 +185,12 @@ elements.giant_dinosaur = {
         // 🦷 LOWER TEETH
         // =========================
 
-        tryCreate(
-            "dinosaur_tooth",
-            x + 9,
-            y - 4,
-            true
-        );
-
-        tryCreate(
-            "dinosaur_tooth",
-            x + 11,
-            y - 4,
-            true
-        );
+        tryCreate("dinosaur_tooth", x + 8, y - 4, true);
+        tryCreate("dinosaur_tooth", x + 10, y - 4, true);
+        tryCreate("dinosaur_tooth", x + 12, y - 4, true);
 
         // =========================
-        // 🦎 FULLER RAISED TAIL
+        // 🦎 SHORTER RAISED TAIL
         // =========================
 
         for (var dx = -8; dx >= -13; dx--) {
@@ -224,7 +205,7 @@ elements.giant_dinosaur = {
             }
         }
 
-        for (var dx = -14; dx >= -18; dx--) {
+        for (var dx = -14; dx >= -17; dx--) {
             var width = 1;
 
             for (var dy = -width; dy <= width; dy++) {
@@ -236,7 +217,7 @@ elements.giant_dinosaur = {
             }
         }
 
-        for (var dx = -19; dx >= -23; dx--) {
+        for (var dx = -18; dx >= -20; dx--) {
             makePart(
                 "giant_dinosaur",
                 x + dx,
@@ -244,17 +225,10 @@ elements.giant_dinosaur = {
             );
         }
 
-        // Raised tail tip
         makePart(
             "giant_dinosaur",
-            x - 24,
+            x - 21,
             y
-        );
-
-        makePart(
-            "giant_dinosaur",
-            x - 25,
-            y - 1
         );
 
         // =========================
