@@ -20,7 +20,11 @@ elements.giant_dinosaur = {
         var y = pixel.y;
 
         function makePart(elementID, px, py) {
-            var p = tryCreate(elementID, px, py);
+            // Create the part, then mark the actual pixel.
+            // tryCreate() does not return the created pixel.
+            tryCreate(elementID, px, py, true);
+
+            var p = getPixel(px, py);
 
             if (p) {
                 p.dino_part = true;
