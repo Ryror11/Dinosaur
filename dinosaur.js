@@ -388,7 +388,18 @@ elements.giant_dinosaur = {
         );
 
         // Tiny black nail/claw
-        makePart("dinosaur_nail", x + 7, y + 3);;
+        makePart("dinosaur_nail", x + 7, y + 3);
+
+        // Re-mark the anchor after the body has been built.
+        // Some body parts overlap the original anchor pixel.
+        var anchor = getPixel(x, y);
+        if (anchor) {
+            anchor.dino_part = true;
+            anchor.dino_root = true;
+            anchor.dino_id = dinoId;
+            anchor.dino_dir = 1;
+            anchor.dino_move_cooldown = 8;
+        }
     }
 };
 
