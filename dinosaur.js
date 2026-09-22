@@ -253,7 +253,9 @@ elements.giant_dinosaur = {
         makePart("dinosaur_back", x - 21, y - 1);
 
         // =========================
-        // 🦵 POWERFUL LEGS
+        // 🦵 POWERFUL ANGLED LEGS
+        // Match the pixel-art stance: thick upper legs,
+        // angled lower legs, and wide feet.
         // =========================
 
         var legs = [-3, 3];
@@ -262,49 +264,25 @@ elements.giant_dinosaur = {
 
             var legX = legs[i];
 
-            // Upper leg
+            // Thick upper leg
             for (var dy = 5; dy <= 9; dy++) {
-
-                makePart(
-                    "giant_dinosaur",
-                    x + legX,
-                    y + dy
-                );
-
-                makePart(
-                    "giant_dinosaur",
-                    x + legX + 1,
-                    y + dy
-                );
+                makePart("giant_dinosaur", x + legX, y + dy);
+                makePart("giant_dinosaur", x + legX + 1, y + dy);
             }
 
-            // Lower leg
+            // Angled lower leg — each leg bends outward
+            var offset;
+            if (legX < 0) offset = -1;
+            else offset = 1;
+
             for (var dy = 10; dy <= 13; dy++) {
-
-                var offset;
-
-                if (legX < 0) {
-                    offset = -1;
-                }
-                else {
-                    offset = 1;
-                }
-
-                makePart(
-                    "giant_dinosaur",
-                    x + legX + offset,
-                    y + dy
-                );
+                makePart("giant_dinosaur", x + legX + offset, y + dy);
+                makePart("giant_dinosaur", x + legX + offset + 1, y + dy);
             }
 
-            // Foot
+            // Wide foot
             for (var dx = -1; dx <= 2; dx++) {
-
-                makePart(
-                    "giant_dinosaur",
-                    x + legX + dx,
-                    y + 14
-                );
+                makePart("giant_dinosaur", x + legX + offset + dx, y + 14);
             }
         }
 
