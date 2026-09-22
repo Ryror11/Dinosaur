@@ -45,23 +45,17 @@ elements.giant_dinosaur = {
 
         // =========================
         // 🟫 BROWN BACK — 1 PIXEL DEEP
-        // Continuous from head to tail
+        // Stops BEFORE the neck so brown never runs inside it.
+        // The dorsal stripe will continue smoothly onto the tail below.
         // =========================
 
-        for (var dx = -6; dx <= 6; dx++) {
+        for (var dx = -7; dx <= 2; dx++) {
             makePart(
                 "dinosaur_back",
                 x + dx,
                 y - 3
             );
         }
-
-        // Raised brown neck ridge
-        makePart("dinosaur_back", x + 1, y - 4);
-        makePart("dinosaur_back", x + 2, y - 5);
-        makePart("dinosaur_back", x + 3, y - 6);
-        makePart("dinosaur_back", x + 4, y - 7);
-        makePart("dinosaur_back", x + 5, y - 8);
 
         // =========================
         // 🦕 UPRIGHT NECK
@@ -234,6 +228,29 @@ elements.giant_dinosaur = {
             x - 21,
             y
         );
+
+        // =========================
+        // 🟫 BROWN DORSAL STRIPE → TAIL
+        // One pixel deep, stepping down naturally with the tail.
+        // =========================
+
+        makePart("dinosaur_back", x - 8, y - 2);
+        makePart("dinosaur_back", x - 9, y - 1);
+        makePart("dinosaur_back", x - 10, y);
+
+        for (var dx = -11; dx >= -13; dx--) {
+            makePart("dinosaur_back", x + dx, y + 1);
+        }
+
+        for (var dx = -14; dx >= -17; dx--) {
+            makePart("dinosaur_back", x + dx, y);
+        }
+
+        for (var dx = -18; dx >= -20; dx--) {
+            makePart("dinosaur_back", x + dx, y);
+        }
+
+        makePart("dinosaur_back", x - 21, y - 1);
 
         // =========================
         // 🦵 POWERFUL LEGS
