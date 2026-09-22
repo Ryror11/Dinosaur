@@ -231,19 +231,17 @@ elements.giant_dinosaur = {
 
         // =========================
         // 🟫 BROWN DORSAL STRIPE → TAIL
-        // One pixel deep, stepping down naturally with the tail.
+        // Follow the exact TOP of the tail, one pixel above it.
+        // In Sandboxels, increasing Y goes downward, so the
+        // back sits one pixel ABOVE the tail surface.
         // =========================
 
-        makePart("dinosaur_back", x - 8, y - 2);
-        makePart("dinosaur_back", x - 9, y - 1);
-        makePart("dinosaur_back", x - 10, y);
-
-        for (var dx = -11; dx >= -13; dx--) {
-            makePart("dinosaur_back", x + dx, y + 1);
+        for (var dx = -8; dx >= -13; dx--) {
+            makePart("dinosaur_back", x + dx, y - 1);
         }
 
         for (var dx = -14; dx >= -17; dx--) {
-            makePart("dinosaur_back", x + dx, y);
+            makePart("dinosaur_back", x + dx, y - 1);
         }
 
         for (var dx = -18; dx >= -20; dx--) {
@@ -308,9 +306,9 @@ elements.giant_dinosaur = {
             y + 2
         );
 
-        // Tiny claw
+        // Tiny black nail/claw
         tryCreate(
-            "dinosaur_tooth",
+            "dinosaur_nail",
             x + 7,
             y + 3,
             true
@@ -365,6 +363,19 @@ elements.dinosaur_tooth = {
 elements.dinosaur_mouth = {
     name: "DinosaurMouth",
     color: "#5c1717",
+    behavior: behaviors.WALL,
+    category: "life",
+    state: "solid"
+};
+
+
+// =========================
+// 🖤 NAIL / CLAW
+// =========================
+
+elements.dinosaur_nail = {
+    name: "DinosaurNail",
+    color: "#1a1a1a",
     behavior: behaviors.WALL,
     category: "life",
     state: "solid"
