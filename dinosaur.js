@@ -11,13 +11,110 @@ elements.giant_dinosaur = {
 
     tick: function(pixel) {
 
-        // Body parts must not create another dinosaur
-        if (pixel.dino_part) return;
+        // Only the original anchor controls the whole dinosaur.
+        if (pixel.dino_part && !pixel.dino_root) return;
 
+        // Existing dinosaur anchor: move the entire body together.
+        if (pixel.dino_root) {
+            if (pixel.dino_move_cooldown > 0) {
+                pixel.dino_move_cooldown--;
+                return;
+            }
+
+            pixel.dino_move_cooldown = 8;
+
+            var id = pixel.dino_id;
+            var dir = pixel.dino_dir || 1;
+            var parts = [];
+
+            // Find every part belonging to this dinosaur.
+            for (var px = Math.max(0, pixel.x - 25); px <= Math.min(width - 1, pixel.x + 25); px++) {
+                for (var py = Math.max(0, pixel.y - 18); py <= Math.min(height - 1, pixel.y + 18); py++) {
+                    var p = pixelMap[px][py];
+                    if (p && p.dino_id === id) {
+                        parts.push(p);
+                    }
+                }
+            }
+
+            // Check the whole body before moving.
+            var blocked = false;
+            for (var i = 0; i < parts.length; i++) {
+                var nx = parts[i].x + dir;
+                var ny = parts[i].y;
+
+                if (nx < 0 || nx >= width || ny < 0 || ny >= height) {
+                    blocked = true;
+                    break;
+                }
+
+                var target = pixelMap[nx][ny];
+                if (target && target.dino_id !== id) {
+                    blocked = true;
+                    break;
+                }
+            }
+
+            // Turn around instead of splitting the dinosaur.
+            if (blocked) {
+                pixel.dino_dir = -dir;
+                return;
+            }
+
+            // Save the pixels before deleting them.
+            var saved = [];
+            for (var i = 0; i < parts.length; i++) {
+                var old = parts[i];
+
+                saved.push({
+                    element: old.element,
+                    x: old.x + dir,
+                    y: old.y,
+                    color: old.color,
+                    temp: old.temp,
+                    dino_part: old.dino_part,
+                    dino_root: old.dino_root,
+                    dino_id: old.dino_id,
+                    dino_move_cooldown: old.dino_move_cooldown,
+                    dino_dir: old.dino_dir
+                });
+            }
+
+            // Remove the old body.
+            for (var i = 0; i < parts.length; i++) {
+                deletePixel(parts[i].x, parts[i].y);
+            }
+
+            // Rebuild it one pixel to the left/right.
+            for (var i = 0; i < saved.length; i++) {
+                var s = saved[i];
+                createPixel(s.element, s.x, s.y);
+
+                var np = getPixel(s.x, s.y);
+                if (np) {
+                    np.color = s.color;
+                    np.temp = s.temp;
+                    np.dino_part = s.dino_part;
+                    np.dino_root = s.dino_root;
+                    np.dino_id = s.dino_id;
+                    np.dino_move_cooldown = s.dino_move_cooldown;
+                    np.dino_dir = s.dino_dir;
+                }
+            }
+
+            return;
+        }
+
+        // First pixel placed: create a unique group ID.
         pixel.dino_part = true;
+        pixel.dino_root = true;
 
         var x = pixel.x;
         var y = pixel.y;
+        var dinoId = "dino_" + pixelTicks + "_" + x + "_" + y;
+        pixel.dino_id = dinoId;
+        pixel.dino_dir = 1;
+        pixel.dino_move_cooldown = 8;
 
         function makePart(elementID, px, py) {
             // Create the part, then mark the actual pixel.
@@ -28,6 +125,7 @@ elements.giant_dinosaur = {
 
             if (p) {
                 p.dino_part = true;
+                p.dino_id = dinoId;
             }
 
             return p;
@@ -109,26 +207,9 @@ elements.giant_dinosaur = {
         // 😠 ANGRY 3-PIXEL EYE
         //     ■
         //     ■■
-        tryCreate(
-            "dinosaur_eye",
-            x + 7,
-            y - 12,
-            true
-        );
-
-        tryCreate(
-            "dinosaur_eye",
-            x + 7,
-            y - 11,
-            true
-        );
-
-        tryCreate(
-            "dinosaur_eye",
-            x + 8,
-            y - 11,
-            true
-        );
+        makePart("dinosaur_eye", x + 7, y - 12);
+        makePart("dinosaur_eye", x + 7, y - 11);
+        makePart("dinosaur_eye", x + 8, y - 11);
 
         // =========================
         // 🟢 FILL THE OLD BLACK NECK GAP
@@ -163,9 +244,9 @@ elements.giant_dinosaur = {
         // 🦷 UPPER TEETH
         // =========================
 
-        tryCreate("dinosaur_tooth", x + 8, y - 7, true);
-        tryCreate("dinosaur_tooth", x + 10, y - 7, true);
-        tryCreate("dinosaur_tooth", x + 12, y - 7, true);
+        makePart("dinosaur_tooth", x + 8, y - 7);
+        makePart("dinosaur_tooth", x + 10, y - 7);
+        makePart("dinosaur_tooth", x + 12, y - 7);
 
         // =========================
         // 🦖 LOWER JAW
@@ -183,9 +264,9 @@ elements.giant_dinosaur = {
         // 🦷 LOWER TEETH
         // =========================
 
-        tryCreate("dinosaur_tooth", x + 8, y - 4, true);
-        tryCreate("dinosaur_tooth", x + 10, y - 4, true);
-        tryCreate("dinosaur_tooth", x + 12, y - 4, true);
+        makePart("dinosaur_tooth", x + 8, y - 4);
+        makePart("dinosaur_tooth", x + 10, y - 4);
+        makePart("dinosaur_tooth", x + 12, y - 4);
 
         // =========================
         // 🦎 SHORTER RAISED TAIL
@@ -307,12 +388,7 @@ elements.giant_dinosaur = {
         );
 
         // Tiny black nail/claw
-        tryCreate(
-            "dinosaur_nail",
-            x + 7,
-            y + 3,
-            true
-        );
+        makePart("dinosaur_nail", x + 7, y + 3);;
     }
 };
 
