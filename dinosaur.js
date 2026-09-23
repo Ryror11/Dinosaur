@@ -3,6 +3,12 @@
 // Upright pixel-art T. rex
 // Angry 3-pixel eye
 
+// 🦖 GIANT DINOSAUR - FINAL BODY DESIGN
+// VERSION: NATIVE GROUP GRAVITY TEST — uses Sandboxels pixel relations
+// Upright pixel-art T. rex
+// Angry 3-pixel eye
+
+var giantDinosaurRelationID = 100000;
 elements.giant_dinosaur = {
     name: "GIANT DINOSAUR",
     color: "#315c32",
@@ -13,100 +19,31 @@ elements.giant_dinosaur = {
 
     tick: function(pixel) {
 
-        // Only the original anchor controls the whole dinosaur.
-        if (pixel.dino_part && !pixel.dino_root) return;
+        // Sandboxels 1.13+ has a native pixel-relation system.
+        // Pixels with the same integer _r value fall and move together.
+        if (pixel.dino_initialized) return;
 
-        // Existing dinosaur anchor: gravity first.
-        // The dinosaur stays a solid multi-pixel body, so we move
-        // every part downward together instead of giving each part
-        // normal powder gravity.
-        if (pixel.dino_root) {
-            if (pixel.dino_gravity_cooldown > 0) {
-                pixel.dino_gravity_cooldown--;
-                return;
-            }
+        pixel.dino_initialized = true;
 
-            pixel.dino_gravity_cooldown = 2;
-
-            var id = pixel.dino_id;
-            var parts = [];
-
-            // Find every part belonging to this dinosaur.
-            for (var px = Math.max(0, pixel.x - 25); px <= Math.min(width - 1, pixel.x + 25); px++) {
-                for (var py = Math.max(0, pixel.y - 20); py <= Math.min(height - 1, pixel.y + 20); py++) {
-                    var p = pixelMap[px][py];
-                    if (p && p.dino_id === id) {
-                        parts.push(p);
-                    }
-                }
-            }
-
-            if (parts.length === 0) return;
-
-            // Check whether any part is standing on something outside
-            // the dinosaur. If not, the whole dinosaur can fall.
-            var blocked = false;
-
-            for (var i = 0; i < parts.length; i++) {
-                var nx = parts[i].x;
-                var ny = parts[i].y + 1;
-
-                if (ny >= height) {
-                    blocked = true;
-                    break;
-                }
-
-                var target = pixelMap[nx][ny];
-
-                if (target && target.dino_id !== id) {
-                    blocked = true;
-                    break;
-                }
-            }
-
-            if (blocked) {
-                return;
-            }
-
-            // Move from the lowest pixels upward so the body can move
-            // into the spaces that its lower pixels just vacated.
-            parts.sort(function(a, b) {
-                return b.y - a.y;
-            });
-
-            for (var i = 0; i < parts.length; i++) {
-                tryMove(parts[i], parts[i].x, parts[i].y + 1);
-            }
-
-            return;
-        }
-
-        // First pixel placed: create a unique group ID.
-        pixel.dino_part = true;
-        pixel.dino_root = true;
+        var relationID = ++giantDinosaurRelationID;
+        pixel._r = relationID;
 
         var x = pixel.x;
         var y = pixel.y;
-        var dinoId = "dino_" + pixelTicks + "_" + x + "_" + y;
-        pixel.dino_id = dinoId;
-        pixel.dino_dir = 1;
-        pixel.dino_move_cooldown = 8;
 
         function makePart(elementID, px, py) {
-            // Create the part, then mark the actual pixel.
-            // tryCreate() does not return the created pixel.
             tryCreate(elementID, px, py, true);
 
             var p = getPixel(px, py);
 
             if (p) {
                 p.dino_part = true;
-                p.dino_id = dinoId;
+                p.dino_id = relationID;
+                p._r = relationID;
             }
 
             return p;
         }
-
         // =========================
         // 🟢 MAIN BODY
         // =========================
