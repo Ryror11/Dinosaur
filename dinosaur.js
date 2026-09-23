@@ -1,4 +1,5 @@
 // 🦖 GIANT DINOSAUR - FINAL BODY DESIGN
+// VERSION: GRAVITY TEST ONLY — horizontal movement intentionally disabled
 // Upright pixel-art T. rex
 // Angry 3-pixel eye
 
