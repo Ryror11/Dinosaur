@@ -21,7 +21,7 @@ elements.giant_dinosaur = {
                 return;
             }
 
-            pixel.dino_move_cooldown = 8;
+            pixel.dino_move_cooldown = 6;
 
             var id = pixel.dino_id;
             var dir = pixel.dino_dir || 1;
@@ -37,8 +37,13 @@ elements.giant_dinosaur = {
                 }
             }
 
-            // Check the whole body before moving.
+            // If the group was not found, do nothing.
+            if (parts.length === 0) return;
+
+            // Check every destination first.
+            // Any non-dinosaur pixel blocks the entire movement.
             var blocked = false;
+
             for (var i = 0; i < parts.length; i++) {
                 var nx = parts[i].x + dir;
                 var ny = parts[i].y;
@@ -49,57 +54,28 @@ elements.giant_dinosaur = {
                 }
 
                 var target = pixelMap[nx][ny];
+
                 if (target && target.dino_id !== id) {
                     blocked = true;
                     break;
                 }
             }
 
-            // Turn around instead of splitting the dinosaur.
+            // Turn around at walls, other elements, or the edge.
             if (blocked) {
                 pixel.dino_dir = -dir;
                 return;
             }
 
-            // Save the pixels before deleting them.
-            var saved = [];
+            // Move the whole body one pixel using Sandboxels' movement
+            // function instead of deleting/recreating the pixels.
+            // This keeps custom pixel properties attached to every part.
+            parts.sort(function(a, b) {
+                return dir > 0 ? b.x - a.x : a.x - b.x;
+            });
+
             for (var i = 0; i < parts.length; i++) {
-                var old = parts[i];
-
-                saved.push({
-                    element: old.element,
-                    x: old.x + dir,
-                    y: old.y,
-                    color: old.color,
-                    temp: old.temp,
-                    dino_part: old.dino_part,
-                    dino_root: old.dino_root,
-                    dino_id: old.dino_id,
-                    dino_move_cooldown: old.dino_move_cooldown,
-                    dino_dir: old.dino_dir
-                });
-            }
-
-            // Remove the old body.
-            for (var i = 0; i < parts.length; i++) {
-                deletePixel(parts[i].x, parts[i].y);
-            }
-
-            // Rebuild it one pixel to the left/right.
-            for (var i = 0; i < saved.length; i++) {
-                var s = saved[i];
-                createPixel(s.element, s.x, s.y);
-
-                var np = getPixel(s.x, s.y);
-                if (np) {
-                    np.color = s.color;
-                    np.temp = s.temp;
-                    np.dino_part = s.dino_part;
-                    np.dino_root = s.dino_root;
-                    np.dino_id = s.dino_id;
-                    np.dino_move_cooldown = s.dino_move_cooldown;
-                    np.dino_dir = s.dino_dir;
-                }
+                tryMove(parts[i], parts[i].x + dir, parts[i].y);
             }
 
             return;
