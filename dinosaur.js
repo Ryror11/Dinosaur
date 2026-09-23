@@ -14,22 +14,24 @@ elements.giant_dinosaur = {
         // Only the original anchor controls the whole dinosaur.
         if (pixel.dino_part && !pixel.dino_root) return;
 
-        // Existing dinosaur anchor: move the entire body together.
+        // Existing dinosaur anchor: gravity first.
+        // The dinosaur stays a solid multi-pixel body, so we move
+        // every part downward together instead of giving each part
+        // normal powder gravity.
         if (pixel.dino_root) {
-            if (pixel.dino_move_cooldown > 0) {
-                pixel.dino_move_cooldown--;
+            if (pixel.dino_gravity_cooldown > 0) {
+                pixel.dino_gravity_cooldown--;
                 return;
             }
 
-            pixel.dino_move_cooldown = 6;
+            pixel.dino_gravity_cooldown = 2;
 
             var id = pixel.dino_id;
-            var dir = pixel.dino_dir || 1;
             var parts = [];
 
             // Find every part belonging to this dinosaur.
             for (var px = Math.max(0, pixel.x - 25); px <= Math.min(width - 1, pixel.x + 25); px++) {
-                for (var py = Math.max(0, pixel.y - 18); py <= Math.min(height - 1, pixel.y + 18); py++) {
+                for (var py = Math.max(0, pixel.y - 20); py <= Math.min(height - 1, pixel.y + 20); py++) {
                     var p = pixelMap[px][py];
                     if (p && p.dino_id === id) {
                         parts.push(p);
@@ -37,18 +39,17 @@ elements.giant_dinosaur = {
                 }
             }
 
-            // If the group was not found, do nothing.
             if (parts.length === 0) return;
 
-            // Check every destination first.
-            // Any non-dinosaur pixel blocks the entire movement.
+            // Check whether any part is standing on something outside
+            // the dinosaur. If not, the whole dinosaur can fall.
             var blocked = false;
 
             for (var i = 0; i < parts.length; i++) {
-                var nx = parts[i].x + dir;
-                var ny = parts[i].y;
+                var nx = parts[i].x;
+                var ny = parts[i].y + 1;
 
-                if (nx < 0 || nx >= width || ny < 0 || ny >= height) {
+                if (ny >= height) {
                     blocked = true;
                     break;
                 }
@@ -61,21 +62,18 @@ elements.giant_dinosaur = {
                 }
             }
 
-            // Turn around at walls, other elements, or the edge.
             if (blocked) {
-                pixel.dino_dir = -dir;
                 return;
             }
 
-            // Move the whole body one pixel using Sandboxels' movement
-            // function instead of deleting/recreating the pixels.
-            // This keeps custom pixel properties attached to every part.
+            // Move from the lowest pixels upward so the body can move
+            // into the spaces that its lower pixels just vacated.
             parts.sort(function(a, b) {
-                return dir > 0 ? b.x - a.x : a.x - b.x;
+                return b.y - a.y;
             });
 
             for (var i = 0; i < parts.length; i++) {
-                tryMove(parts[i], parts[i].x + dir, parts[i].y);
+                tryMove(parts[i], parts[i].x, parts[i].y + 1);
             }
 
             return;
