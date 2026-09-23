@@ -1,9 +1,4 @@
 // 🦖 GIANT DINOSAUR - FINAL BODY DESIGN
-// VERSION: GRAVITY TEST ONLY — horizontal movement intentionally disabled
-// Upright pixel-art T. rex
-// Angry 3-pixel eye
-
-// 🦖 GIANT DINOSAUR - FINAL BODY DESIGN
 // VERSION: NATIVE GROUP GRAVITY TEST — uses Sandboxels pixel relations
 // Upright pixel-art T. rex
 // Angry 3-pixel eye
@@ -40,6 +35,7 @@ elements.giant_dinosaur = {
                 p.dino_part = true;
                 p.dino_id = relationID;
                 p._r = relationID;
+                p.dino_initialized = true;
             }
 
             return p;
@@ -302,6 +298,16 @@ elements.giant_dinosaur = {
 
         // Tiny black nail/claw
         makePart("dinosaur_nail", x + 7, y + 3);
+
+        // Re-mark the original anchor after the body has been built.
+        // This is the pixel that owns the dinosaur's relation.
+        var anchor = getPixel(x, y);
+        if (anchor) {
+            anchor.dino_part = true;
+            anchor.dino_id = relationID;
+            anchor._r = relationID;
+            anchor.dino_initialized = true;
+        }
 
         // Re-mark the anchor after the body has been built.
         // Some body parts overlap the original anchor pixel.
