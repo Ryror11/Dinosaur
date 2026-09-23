@@ -4,88 +4,26 @@
 // Angry 3-pixel eye
 
 var giantDinosaurID = 100000;
+
 elements.giant_dinosaur = {
     name: "GIANT DINOSAUR",
     color: "#315c32",
     category: "life",
     state: "solid",
-    // Gravity is controlled by the dinosaur's tick function.
     movable: true,
 
+    // Build one complete dinosaur, then let Sandboxels'
+    // native relation system handle gravity for the whole body.
     tick: function(pixel) {
 
-        // Only the original anchor controls the whole dinosaur.
-        if (pixel.dino_part && !pixel.dino_root) return;
-
-        // Existing dinosaur: gravity moves every body part together.
-        if (pixel.dino_root) {
-            if (pixel.dino_gravity_cooldown > 0) {
-                pixel.dino_gravity_cooldown--;
-                return;
-            }
-
-            pixel.dino_gravity_cooldown = 1;
-
-            var id = pixel.dino_id;
-            var parts = [];
-
-            // Find every pixel belonging to this dinosaur.
-            for (var px = Math.max(0, pixel.x - 25); px <= Math.min(width - 1, pixel.x + 25); px++) {
-                for (var py = Math.max(0, pixel.y - 20); py <= Math.min(height - 1, pixel.y + 20); py++) {
-                    var p = pixelMap[px][py];
-                    if (p && p.dino_id === id) {
-                        parts.push(p);
-                    }
-                }
-            }
-
-            if (parts.length === 0) return;
-
-            // If ANY part is standing on something outside this dinosaur,
-            // the whole dinosaur stays where it is.
-            var blocked = false;
-
-            for (var i = 0; i < parts.length; i++) {
-                var nx = parts[i].x;
-                var ny = parts[i].y + 1;
-
-                if (ny >= height) {
-                    blocked = true;
-                    break;
-                }
-
-                var target = pixelMap[nx][ny];
-
-                if (target && target.dino_id !== id) {
-                    blocked = true;
-                    break;
-                }
-            }
-
-            if (blocked) return;
-
-            // Lowest pixels move first so upper pixels can enter
-            // the spaces they leave behind.
-            parts.sort(function(a, b) {
-                return b.y - a.y;
-            });
-
-            for (var i = 0; i < parts.length; i++) {
-                tryMove(parts[i], parts[i].x, parts[i].y + 1);
-            }
-
-            return;
-        }
-
-        // First pixel placed: create a unique dinosaur ID.
-        pixel.dino_part = true;
-        pixel.dino_root = true;
-        pixel.dino_id = ++giantDinosaurID;
-        pixel.dino_gravity_cooldown = 1;
+        // A grouped dinosaur already has a relation ID.
+        if (pixel._r !== undefined) return;
 
         var x = pixel.x;
         var y = pixel.y;
-        var dinoId = pixel.dino_id;
+
+        // Give this dinosaur its own native relation ID.
+        var dinoRelationID = currentRelations._id++;
 
         function makePart(elementID, px, py) {
             tryCreate(elementID, px, py, true);
@@ -93,8 +31,8 @@ elements.giant_dinosaur = {
             var p = getPixel(px, py);
 
             if (p) {
-                p.dino_part = true;
-                p.dino_id = dinoId;
+                // Temporary marker so we can group only the final pixels.
+                p.dino_spawn = true;
             }
 
             return p;
@@ -358,15 +296,26 @@ elements.giant_dinosaur = {
         // Tiny black nail/claw
         makePart("dinosaur_nail", x + 7, y + 3);
 
-        // Re-mark the original anchor after the body has been built.
-        // Some body parts overlap the original anchor pixel.
-        var anchor = getPixel(x, y);
-        if (anchor) {
-            anchor.dino_part = true;
-            anchor.dino_root = true;
-            anchor.dino_id = dinoId;
-            anchor.dino_gravity_cooldown = 1;
+        // =========================
+        // 🔗 GROUP THE FINAL BODY
+        // =========================
+        //
+        // IMPORTANT:
+        // The body is built first because several body parts overlap.
+        // Grouping only the final pixels prevents duplicate/stale pixels
+        // from entering the relation.
+
+        for (var px = Math.max(0, x - 22); px <= Math.min(width - 1, x + 13); px++) {
+            for (var py = Math.max(0, y - 14); py <= Math.min(height - 1, y + 15); py++) {
+                var p = pixelMap[px][py];
+
+                if (p && p.dino_spawn === true) {
+                    addToRelation(p, dinoRelationID);
+                    delete p.dino_spawn;
+                }
+            }
         }
+
 
     }
 };
