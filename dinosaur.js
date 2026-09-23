@@ -16,12 +16,23 @@ elements.giant_dinosaur = {
     // native relation system handle gravity for the whole body.
     tick: function(pixel) {
 
+        // If this pixel is already grouped, explicitly ask Sandboxels'
+        // relation engine to apply gravity to the whole dinosaur.
+        // The built-in engine also handles relations, but doing this here
+        // makes the mod reliable across the Neal.fun version.
+        if (pixel._r !== undefined) {
+            var relation = getRelation(pixel._r);
+
+            if (relation.lastMove !== pixelTicks) {
+                tryMoveRelation(relation, 0, 1);
+            }
+
+            return;
+        }
+
         // Every body pixel created by this function gets a permanent
         // part marker. This prevents the body from spawning new dinosaurs.
         if (pixel.dino_part === true) return;
-
-        // A grouped dinosaur already has a relation ID.
-        if (pixel._r !== undefined) return;
 
         var x = pixel.x;
         var y = pixel.y;
