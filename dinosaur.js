@@ -1,5 +1,5 @@
 // 🦖 GIANT DINOSAUR - FINAL BODY DESIGN
-// VERSION: GROUP GRAVITY TEST — custom whole-body gravity
+// VERSION: ANTI-MULTIPLY FIX — body pixels are locked from spawning
 // Upright pixel-art T. rex
 // Angry 3-pixel eye
 
@@ -16,6 +16,10 @@ elements.giant_dinosaur = {
     // native relation system handle gravity for the whole body.
     tick: function(pixel) {
 
+        // Every body pixel created by this function gets a permanent
+        // part marker. This prevents the body from spawning new dinosaurs.
+        if (pixel.dino_part === true) return;
+
         // A grouped dinosaur already has a relation ID.
         if (pixel._r !== undefined) return;
 
@@ -31,6 +35,11 @@ elements.giant_dinosaur = {
             var p = getPixel(px, py);
 
             if (p) {
+                // Permanent marker: this pixel is already part of a dinosaur.
+                // Without this, every body pixel with the giant_dinosaur
+                // element would run tick() and build another dinosaur.
+                p.dino_part = true;
+
                 // Temporary marker so we can group only the final pixels.
                 p.dino_spawn = true;
             }
