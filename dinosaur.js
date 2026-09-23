@@ -8,7 +8,8 @@ elements.giant_dinosaur = {
     color: "#315c32",
     category: "life",
     state: "solid",
-    behavior: behaviors.WALL,
+    // Gravity is controlled by the dinosaur's tick function.
+    movable: true,
 
     tick: function(pixel) {
 
