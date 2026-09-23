@@ -1,9 +1,9 @@
 // 🦖 GIANT DINOSAUR - FINAL BODY DESIGN
-// VERSION: NATIVE GROUP GRAVITY TEST — uses Sandboxels pixel relations
+// VERSION: GROUP GRAVITY TEST — custom whole-body gravity
 // Upright pixel-art T. rex
 // Angry 3-pixel eye
 
-var giantDinosaurRelationID = 100000;
+var giantDinosaurID = 100000;
 elements.giant_dinosaur = {
     name: "GIANT DINOSAUR",
     color: "#315c32",
@@ -14,17 +14,78 @@ elements.giant_dinosaur = {
 
     tick: function(pixel) {
 
-        // Sandboxels 1.13+ has a native pixel-relation system.
-        // Pixels with the same integer _r value fall and move together.
-        if (pixel.dino_initialized) return;
+        // Only the original anchor controls the whole dinosaur.
+        if (pixel.dino_part && !pixel.dino_root) return;
 
-        pixel.dino_initialized = true;
+        // Existing dinosaur: gravity moves every body part together.
+        if (pixel.dino_root) {
+            if (pixel.dino_gravity_cooldown > 0) {
+                pixel.dino_gravity_cooldown--;
+                return;
+            }
 
-        var relationID = ++giantDinosaurRelationID;
-        pixel._r = relationID;
+            pixel.dino_gravity_cooldown = 1;
+
+            var id = pixel.dino_id;
+            var parts = [];
+
+            // Find every pixel belonging to this dinosaur.
+            for (var px = Math.max(0, pixel.x - 25); px <= Math.min(width - 1, pixel.x + 25); px++) {
+                for (var py = Math.max(0, pixel.y - 20); py <= Math.min(height - 1, pixel.y + 20); py++) {
+                    var p = pixelMap[px][py];
+                    if (p && p.dino_id === id) {
+                        parts.push(p);
+                    }
+                }
+            }
+
+            if (parts.length === 0) return;
+
+            // If ANY part is standing on something outside this dinosaur,
+            // the whole dinosaur stays where it is.
+            var blocked = false;
+
+            for (var i = 0; i < parts.length; i++) {
+                var nx = parts[i].x;
+                var ny = parts[i].y + 1;
+
+                if (ny >= height) {
+                    blocked = true;
+                    break;
+                }
+
+                var target = pixelMap[nx][ny];
+
+                if (target && target.dino_id !== id) {
+                    blocked = true;
+                    break;
+                }
+            }
+
+            if (blocked) return;
+
+            // Lowest pixels move first so upper pixels can enter
+            // the spaces they leave behind.
+            parts.sort(function(a, b) {
+                return b.y - a.y;
+            });
+
+            for (var i = 0; i < parts.length; i++) {
+                tryMove(parts[i], parts[i].x, parts[i].y + 1);
+            }
+
+            return;
+        }
+
+        // First pixel placed: create a unique dinosaur ID.
+        pixel.dino_part = true;
+        pixel.dino_root = true;
+        pixel.dino_id = ++giantDinosaurID;
+        pixel.dino_gravity_cooldown = 1;
 
         var x = pixel.x;
         var y = pixel.y;
+        var dinoId = pixel.dino_id;
 
         function makePart(elementID, px, py) {
             tryCreate(elementID, px, py, true);
@@ -33,9 +94,7 @@ elements.giant_dinosaur = {
 
             if (p) {
                 p.dino_part = true;
-                p.dino_id = relationID;
-                p._r = relationID;
-                p.dino_initialized = true;
+                p.dino_id = dinoId;
             }
 
             return p;
@@ -300,13 +359,13 @@ elements.giant_dinosaur = {
         makePart("dinosaur_nail", x + 7, y + 3);
 
         // Re-mark the original anchor after the body has been built.
-        // This is the pixel that owns the dinosaur's relation.
+        // Some body parts overlap the original anchor pixel.
         var anchor = getPixel(x, y);
         if (anchor) {
             anchor.dino_part = true;
-            anchor.dino_id = relationID;
-            anchor._r = relationID;
-            anchor.dino_initialized = true;
+            anchor.dino_root = true;
+            anchor.dino_id = dinoId;
+            anchor.dino_gravity_cooldown = 1;
         }
 
     }
@@ -320,7 +379,7 @@ elements.giant_dinosaur = {
 elements.dinosaur_back = {
     name: "DinosaurBack",
     color: "#654321",
-    behavior: behaviors.WALL,
+    movable: true,
     category: "life",
     state: "solid"
 };
@@ -333,7 +392,7 @@ elements.dinosaur_back = {
 elements.dinosaur_eye = {
     name: "DinosaurEye",
     color: "#000000",
-    behavior: behaviors.WALL,
+    movable: true,
     category: "life",
     state: "solid"
 };
@@ -346,7 +405,7 @@ elements.dinosaur_eye = {
 elements.dinosaur_tooth = {
     name: "DinosaurTooth",
     color: "#eeeecc",
-    behavior: behaviors.WALL,
+    movable: true,
     category: "life",
     state: "solid"
 };
@@ -359,7 +418,7 @@ elements.dinosaur_tooth = {
 elements.dinosaur_mouth = {
     name: "DinosaurMouth",
     color: "#5c1717",
-    behavior: behaviors.WALL,
+    movable: true,
     category: "life",
     state: "solid"
 };
@@ -372,7 +431,7 @@ elements.dinosaur_mouth = {
 elements.dinosaur_nail = {
     name: "DinosaurNail",
     color: "#1a1a1a",
-    behavior: behaviors.WALL,
+    movable: true,
     category: "life",
     state: "solid"
 };
